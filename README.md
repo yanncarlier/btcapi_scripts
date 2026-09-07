@@ -1,45 +1,21 @@
 # btcapi_scripts
 
-### **Primary Standard Address Types (5 Types)**
+```
+python all_address_types.py "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+Mnemonic: abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
 
+1BZ9j3F7m4H1RPyeDp5iFwpR31SB6zrs19  # Original bitcoind (Bitcoin Core) (2009) used P2PKH (Pay-to-PubKey-Hash) - m
+1Q5FHbm75ZYDnHkGgBC2y8cCn8cTrqK37v  # Electrum (2011) - m/0'/0
+16fWWdLokmpctATuim8q5SvAu1GR9prV5m  # Bitcoin Core (2012) - m/0'/0'/0'
+1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA  # Legacy / Bitcoin Core (BIP44) (2014) - m/44'/0'/0'/0/0
+17871ErDqdevLTLWBH6WzjUc1EKGDQzCMA  # MultiBit Classic (2011/2014) - m/0'/0/0
+13KE6TffArLh4fVM6uoQzvsYq5vwetJcVM  # Coinomi (2014), Ledger (2014/2015), Blockchain.info (2015) (BIP44 variant) - m/44'/0'/0'/0
+1Ecw6WNntSpgRMtMfdeCt72UzsTEbqq6As  # MultiBit HD (2015) - m/0'/0/0'
+37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf  # Nested SegWit (BIP49) (2016) - m/49'/0'/0'/0/0
+bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu  # Native SegWit (BIP84) (2017) - m/84'/0'/0'/0/0
+bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr  # Taproot (BIP86) (2021) - m/86'/0'/0'/0/0
 
-
-Output reordered chronologically:
-
-
-
-1. Originally in 2009, `bitcoind` (Bitcoin Core) used **P2PKH (Pay-to-PubKey-Hash)** addresses as its standard address format for receiving transactions
-2. **Electrum** (2011) – `m/0'/0'/0`
-3. **BIP32 Bitcoin** (2012) – `m/44'/0'/0'/0/0`
-4. **Legacy / Bitcoin Core (BIP44)** (2014) – `m/44'/0'/0'/0/0`
-5. **Multibit** (2014) – `m/0'/0/0`
-6. **Nested SegWit (BIP49)** (2016) – `m/49'/0'/0'/0/0`
-7. **Native SegWit (BIP84)** (2017) – `m/84'/0'/0'/0/0`
-8. **Taproot (BIP86)** (2021) – `m/86'/0'/0'/0/0`
-
-
-
-Modern Bitcoin software generates addresses using different script formats from the same master seed by using specific **BIP44/49/84/86/32 derivation paths**:
-
-| **Address Type**    | **Standard Name**      | **Address Prefix** | **Derivation Path Structure** | **Purpose / Features**                                       |
-| ------------------- | ---------------------- | ------------------ | ----------------------------- | ------------------------------------------------------------ |
-| **P2PKH**           | Legacy                 | `1...`             | `m/44'/0'/0'/0/i`             | Original Bitcoin format (highest fees).                      |
-| **P2SH-P2WPKH**     | Nested SegWit          | `3...`             | `m/49'/0'/0'/0/i`             | SegWit wrapped in P2SH for backward compatibility.           |
-| **P2WPKH**          | Native SegWit (Bech32) | `bc1q...`          | `m/84'/0'/0'/0/i`             | Lower transaction fees, standard for most wallets today.     |
-| **P2TR**            | Taproot (Bech32m)      | `bc1p...`          | `m/86'/0'/0'/0/i`             | Modern privacy, smart contract efficiency, and lowest fee potential. |
-| **P2SH** (Multisig) | Pay-to-Script-Hash     | `3...`             | Custom scripts                | Used for multisig or custom script derivations from the same keys. |
-
-
-
-### **Network & Variant Extensions**
-
-If you include test networks and non-standard derivations, the same seed also supports:
-
-- **Testnet / Signet / Regtest:** Parallel address structures (`tb1q...`, `tb1p...`, `m...`, `2...`) using the same seed.
-- **Custom / Legacy Derivation Paths:** Non-standard paths used by older wallets (e.g., Electrum legacy paths `m/0'/0/i` or custom account indices).
-- **Silent Payments (BIP352):** Emerging reusable privacy address formats derived from the master seed.
-
-
+```
 
 
 
