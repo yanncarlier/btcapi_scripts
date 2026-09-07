@@ -61,6 +61,15 @@ def main():
     bip44_addr = bip44_mst.Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
     print(f"{bip44_addr.PublicKey().ToAddress()}  # Legacy / Bitcoin Core (BIP44) (2014) - m/44'/0'/0'/0/0")
 
+    # Blockchain.info, Coinomi, and Ledger use m/44'/0'/0' as base path
+    # According to bip39 website, first address is at m/44'/0'/0'/0
+    # All three share the same derivation path and produce the same address
+    bip44_variant_ext = bip32_mst.ChildKey(0x8000002C).ChildKey(0x80000000).ChildKey(0x80000000).ChildKey(0)
+    bip44_variant_addr = compute_p2pkh_address(bip44_variant_ext.PublicKey().RawCompressed().ToBytes())
+    print(f"{bip44_variant_addr}  # Blockchain.info (BIP44 variant) - m/44'/0'/0'/0")
+    print(f"{bip44_variant_addr}  # Coinomi (BIP44 variant) - m/44'/0'/0'/0")
+    print(f"{bip44_variant_addr}  # Ledger (BIP44 variant) - m/44'/0'/0'/0")
+
     # Multibit used m/0'/0/n
     multibit_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0).ChildKey(0)
     multibit_addr = compute_p2pkh_address(multibit_ext.PublicKey().RawCompressed().ToBytes())
