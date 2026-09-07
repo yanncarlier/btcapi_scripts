@@ -2,6 +2,23 @@
 
 ### **Primary Standard Address Types (5 Types)**
 
+
+
+Output reordered chronologically:
+
+
+
+1. Originally in 2009, `bitcoind` (Bitcoin Core) used **P2PKH (Pay-to-PubKey-Hash)** addresses as its standard address format for receiving transactions
+2. **Electrum** (2011) – `m/0'/0'/0`
+3. **BIP32 Bitcoin** (2012) – `m/44'/0'/0'/0/0`
+4. **Legacy / Bitcoin Core (BIP44)** (2014) – `m/44'/0'/0'/0/0`
+5. **Multibit** (2014) – `m/0'/0/0`
+6. **Nested SegWit (BIP49)** (2016) – `m/49'/0'/0'/0/0`
+7. **Native SegWit (BIP84)** (2017) – `m/84'/0'/0'/0/0`
+8. **Taproot (BIP86)** (2021) – `m/86'/0'/0'/0/0`
+
+
+
 Modern Bitcoin software generates addresses using different script formats from the same master seed by using specific **BIP44/49/84/86/32 derivation paths**:
 
 | **Address Type**    | **Standard Name**      | **Address Prefix** | **Derivation Path Structure** | **Purpose / Features**                                       |
@@ -38,6 +55,7 @@ A collection of Python scripts for Bitcoin address generation using various BIP 
 - `BIP86_addressess.py` — BIP86 Taproot (P2TR) addresses
 - `generate_mnemonic.py` — Generate a BIP39 mnemonic phrase
 - `brain_wallet.py` — Brain wallet address derivation from a passphrase
+- `all_address_types.py` — All address types from same seed (chronological)
 
 ### Blockchain API Lookups
 - `blockchain.info.py` — Query blockchain.info
