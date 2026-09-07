@@ -39,12 +39,11 @@ def main():
 
     seed_bytes = Bip39SeedGenerator(mnemonic).Generate()
     print(f"Mnemonic: {mnemonic}\n")
-    print("Originally in 2009, bitcoind (Bitcoin Core) used P2PKH (Pay-to-PubKey-Hash)\n")
 
     bip32_mst = Bip32Secp256k1.FromSeed(seed_bytes)
 
     original_p2pkh = compute_p2pkh_address(bip32_mst.PublicKey().RawCompressed().ToBytes())
-    print(f"{original_p2pkh}  # Original (2009) - P2PKH - m")
+    print(f"{original_p2pkh}  # Original bitcoind (Bitcoin Core) (2009) used P2PKH (Pay-to-PubKey-Hash - m")
 
     # Electrum uses m/0'/n
     electrum_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0)
@@ -64,7 +63,7 @@ def main():
     # Multibit Classic used m/0'/0/n
     multibit_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0).ChildKey(0)
     multibit_addr = compute_p2pkh_address(multibit_ext.PublicKey().RawCompressed().ToBytes())
-    print(f"{multibit_addr}  # MultiBit Classic (2014) - m/0'/0/0")
+    print(f"{multibit_addr}  # MultiBit Classic (2011/2014) - m/0'/0/0")
 
     # Coinomi, Ledger, and Blockchain.info use m/44'/0'/0' as base path
     # According to bip39 website, first address is at m/44'/0'/0'/0
@@ -72,6 +71,11 @@ def main():
     bip44_variant_ext = bip32_mst.ChildKey(0x8000002C).ChildKey(0x80000000).ChildKey(0x80000000).ChildKey(0)
     bip44_variant_addr = compute_p2pkh_address(bip44_variant_ext.PublicKey().RawCompressed().ToBytes())
     print(f"{bip44_variant_addr}  # Coinomi (2014), Ledger (2014/2015), Blockchain.info (2015) (BIP44 variant) - m/44'/0'/0'/0")
+
+    # MultiBit HD used m/0'/0/0' (modified BIP32/44 style path)
+    multibit_hd_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0).ChildKey(0x80000000)
+    multibit_hd_addr = compute_p2pkh_address(multibit_hd_ext.PublicKey().RawCompressed().ToBytes())
+    print(f"{multibit_hd_addr}  # MultiBit HD (2015) - m/0'/0/0'")
 
     bip49_mst = Bip49.FromSeed(seed_bytes, Bip49Coins.BITCOIN)
     bip49_addr = bip49_mst.Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
