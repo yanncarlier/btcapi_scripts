@@ -43,7 +43,7 @@ def main():
     bip32_mst = Bip32Secp256k1.FromSeed(seed_bytes)
 
     original_p2pkh = compute_p2pkh_address(bip32_mst.PublicKey().RawCompressed().ToBytes())
-    print(f"{original_p2pkh}  # Original bitcoind (Bitcoin Core) (2009) used P2PKH (Pay-to-PubKey-Hash - m")
+    print(f"{original_p2pkh}  # Original bitcoind (Bitcoin Core) (2009) used P2PKH (Pay-to-PubKey-Hash) - m")
 
     # Electrum uses m/0'/n
     electrum_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0)
