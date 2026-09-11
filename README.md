@@ -23,6 +23,29 @@ A collection of Python scripts for Bitcoin address generation using various BIP 
 
 ## Scripts
 
+## Setup
+
+```bash
+# Create a virtual environment
+uv venv
+
+# Activate the environment
+source .venv/bin/activate
+
+# Install dependencies
+uv pip install -r requirements.txt
+```
+
+## Usage
+
+Run any script directly with Python:
+
+```bash
+python generate_mnemonic.py
+python BIP44_addresses.py
+python BIP86_addressess.py
+```
+
 ### Address Generation (BIP standards)
 - `BIP32_addresses.py` — BIP32 hierarchical deterministic addresses
 - `BIP44_addresses.py` — BIP44 legacy (P2PKH) addresses
@@ -38,28 +61,7 @@ A collection of Python scripts for Bitcoin address generation using various BIP 
 - `blockcypher.com.py` — Query blockcypher.com
 - `blockstream.info.py` — Query blockstream.info
 
-## Setup
 
-```bash
-# Create a virtual environment
-uv venv
-
-# Install dependencies
-uv pip install -r requirements.txt
-
-# Activate the environment
-source .venv/bin/activate
-```
-
-## Usage
-
-Run any script directly with Python:
-
-```bash
-python generate_mnemonic.py
-python BIP44_addresses.py
-python BIP86_addressess.py
-```
 
 ## Dependencies
 
