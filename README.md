@@ -1,4 +1,4 @@
-# btca-py-scripts
+# btc-py-scripts
 
 
 A collection of Python scripts for Bitcoin address generation using various BIP standards, plus blockchain API lookups.

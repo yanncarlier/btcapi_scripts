@@ -38,7 +38,7 @@ def main():
         raise ValueError("Invalid mnemonic phrase. Please provide a valid BIP39 mnemonic (12 or 24 words).")
 
     seed_bytes = Bip39SeedGenerator(mnemonic).Generate()
-    print(f"Mnemonic: {mnemonic}\n")
+    # print(f"Mnemonic: {mnemonic}\n")
 
     bip32_mst = Bip32Secp256k1.FromSeed(seed_bytes)
 
