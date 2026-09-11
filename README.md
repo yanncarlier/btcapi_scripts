@@ -36,7 +36,7 @@ use `.venv/bin/python` or `python` while the virtual environment is active.
 
 ## Command-line arguments
 
-Four scripts currently accept command-line arguments:
+Five scripts currently accept command-line arguments:
 
 | Script | Usage | Argument |
 | --- | --- | --- |
@@ -45,6 +45,7 @@ Four scripts currently accept command-line arguments:
 | `net/blockcypher.com.py` | `python net/blockcypher.com.py ADDRESS` | Required Bitcoin address to query. |
 | `net/blockstream.info.py` | `python net/blockstream.info.py ADDRESS` | Required Bitcoin address to query. |
 | `net/mempool.space.py` | `python net/mempool.space.py ADDRESS` | Required Bitcoin address to query. |
+| `create_transaction.py` | `python create_transaction.py --private-key KEY --source ADDRESS --txid TXID --vout N --input-sats SATS --destination ADDRESS --amount-sats SATS --fee-sats SATS` | Required transaction details. |
 
 `all_address_types.py` accepts an optional positional argument: a complete,
 quoted BIP39 mnemonic:
@@ -155,6 +156,35 @@ balance from its confirmed and mempool transaction statistics. All lookup
 commands require internet access and depend on the availability and rate limits
 of the respective public API.
 
+### Create and sign a transaction
+
+`create_transaction.py` creates a signed transaction hex string; it neither
+looks up UTXOs nor broadcasts anything. It supports a single, funded legacy
+P2PKH (`1...`) or native SegWit P2WPKH (`bc1q...`) input and P2PKH/P2WPKH
+recipient and change outputs. It needs the exact previous transaction ID,
+output index, and value for the UTXO being spent.
+
+```bash
+python create_transaction.py \
+  --private-key YOUR_WIF_OR_64_HEX_PRIVATE_KEY \
+  --source YOUR_FUNDED_P2PKH_OR_P2WPKH_ADDRESS \
+  --txid PREVIOUS_TRANSACTION_ID \
+  --vout 0 \
+  --input-sats 100000 \
+  --destination RECIPIENT_ADDRESS \
+  --amount-sats 90000 \
+  --fee-sats 1000 \
+  --change-address YOUR_CHANGE_ADDRESS
+```
+
+Omit `--change-address` to return the change to `--source`. A nonzero change
+below 546 sats is rejected as dust. The tool verifies that `--source` belongs
+to the supplied private key, and accepts either a WIF (for the selected
+network) or a 64-character hexadecimal private key. Use `--network testnet`
+for testnet addresses and testnet WIFs. Do not supply a real private key in a
+shared terminal history; an offline signer or established wallet is safer for
+real funds.
+
 ## Scripts at a glance
 
 | Script | Purpose |
@@ -166,6 +196,7 @@ of the respective public API.
 | `net/blockcypher.com.py` | Query the BlockCypher address endpoint. |
 | `net/blockstream.info.py` | Query the Blockstream Esplora address endpoint. |
 | `net/mempool.space.py` | Query the Mempool Space address-details endpoint. |
+| `create_transaction.py` | Build and sign a single-input P2PKH or P2WPKH transaction, without broadcasting. |
 
 The remaining address-derivation scripts are listed in the individual
 derivation table above.
