@@ -27,6 +27,11 @@ def compute_p2pkh_address(pub_key_bytes):
     return Base58Encoder.CheckEncode(b"\x00" + h160)
 
 
+def compute_wif(private_key_bytes):
+    """Encode a compressed mainnet private key in Wallet Import Format."""
+    return Base58Encoder.CheckEncode(b"\x80" + private_key_bytes + b"\x01")
+
+
 try:
     # Validate the mnemonic phrase
     if not Bip39MnemonicValidator().IsValid(mnemonic):
@@ -64,7 +69,7 @@ try:
         address = compute_p2pkh_address(address_key.PublicKey().RawCompressed().ToBytes())
         public_key = address_key.PublicKey().RawCompressed().ToHex()
         private_key = address_key.PrivateKey().Raw().ToHex()
-        wif = address_key.PrivateKey().ToWif()
+        wif = compute_wif(address_key.PrivateKey().Raw().ToBytes())
 
         # Print the output in the specified order
         print("{")
