@@ -1,4 +1,4 @@
-"""Look up a Bitcoin address through Blockstream's Esplora API."""
+"""Look up a Bitcoin address through Mempool Space's public API."""
 
 from __future__ import annotations
 
@@ -9,14 +9,14 @@ import sys
 from urllib.parse import quote
 
 
-API_HOST = "blockstream.info"
+API_HOST = "mempool.space"
 REQUEST_TIMEOUT_SECONDS = 15
 
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the command-line argument parser."""
     parser = argparse.ArgumentParser(
-        description="Return a Bitcoin address's total balance in satoshis from Blockstream Esplora."
+        description="Return a Bitcoin address's total balance in satoshis from Mempool Space."
     )
     parser.add_argument(
         "address",
@@ -26,7 +26,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def get_address_balance(address: str) -> int:
-    """Request and return Blockstream's total balance for one address.
+    """Request and return Mempool Space's total balance for one address.
 
     Args:
         address: Bitcoin address to include in the API request path.
@@ -50,7 +50,7 @@ def get_address_balance(address: str) -> int:
 
     if response.status != http.HTTPStatus.OK:
         raise RuntimeError(
-            f"Blockstream returned HTTP {response.status} {response.reason}: {response_body}"
+            f"Mempool Space returned HTTP {response.status} {response.reason}: {response_body}"
         )
 
     try:
@@ -64,10 +64,10 @@ def get_address_balance(address: str) -> int:
             - mempool_stats["spent_txo_sum"]
         )
     except (json.JSONDecodeError, KeyError, TypeError) as error:
-        raise RuntimeError("Blockstream returned an unexpected balance response.") from error
+        raise RuntimeError("Mempool Space returned an unexpected balance response.") from error
 
     if not isinstance(balance, int):
-        raise RuntimeError("Blockstream returned a non-integer balance.")
+        raise RuntimeError("Mempool Space returned a non-integer balance.")
 
     return balance
 
