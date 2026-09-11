@@ -16,14 +16,19 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-## Usage
+## Usage examples:
 
 Run any script directly with Python:
 
 ```bash
 python generate_mnemonic.py
-python BIP44_addresses.py
-python BIP86_addressess.py
+++++++++++++++++++++++++++++++++++++++++++++++
+BIP39 Mnemonic: tomato vast lemon ride narrow sphere trial when belt member salute faith
+++++++++++++++++++++++++++++++++++++++++++++++
+BIP39 Seed: 2fd19b4428c91719c653e997d9efc4fbd7350f36665fe1126ec95f943340e093b7fca994e57947abcfe48478b04c0c8b8dccc8b07edca1aef1246ca213119cf8
+++++++++++++++++++++++++++++++++++++++++++++++
+BIP32 Root Key: xprv9s21ZrQH143K2So96Kcab6t8pSAueGKbdjmx2nrZBXwCgyAnFaDL1eg4TPL8t47m4RTRFJmLdpAwK7PQL6XzKjhzUGUxvhqz9BWc76cXBG5
+++++++++++++++++++++++++++++++++++++++++++++++
 ```
 To generate addresses from a common BIP39 seed using historical and modern Bitcoin derivation schemes:
 
@@ -42,14 +47,35 @@ bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr  # BIP86 Taproot 
 ## Scripts
 
 ### Address Generation (BIP standards)
-- `BIP32_addresses.py` — BIP32 hierarchical deterministic addresses
-- `BIP44_addresses.py` — BIP44 legacy (P2PKH) addresses
-- `BIP49_addresses.py` — BIP49 nested SegWit (P2SH-P2WPKH) addresses
-- `BIP84_addressess.py` — BIP84 native SegWit (Bech32 / P2WPKH) addresses
-- `BIP86_addressess.py` — BIP86 Taproot (P2TR) addresses
+- `P2PKH_addresses.py` — pre-HD era P2PKH (2009 Bitcoin Core)
+- `Electrum_addresses.py` — Electrum-style P2PKH
+- `BitcoinCoreHD_addresses.py` — Bitcoin Core HD P2PKH
+- `MultiBitClassic_addresses.py` — MultiBit Classic-style P2PKH
+- `BIP44_external_chain_addresses.py` — BIP44 external chain P2PKH
+- `MultiBitHD_addresses.py` — MultiBit HD-style P2PKH
+- `BIP44_addresses.py` — BIP44 Legacy P2PKH
+- `BIP49_addresses.py` — BIP49 Nested SegWit (P2SH-P2WPKH)
+- `BIP84_addresses.py` — BIP84 Native SegWit (P2WPKH)
+- `BIP86_addresses.py` — BIP86 Taproot (P2TR)
 - `generate_mnemonic.py` — Generate a BIP39 mnemonic phrase
 - `brain_wallet.py` — Brain wallet address derivation from a passphrase
-- `all_address_types.py` — All address types from same seed (chronological)
+- `all_address_types.py` — All address types from same seed
+
+### Chronological Order (Earliest to Latest)
+The address generation scripts in chronological order of their standards' introduction:
+
+| # | Script | Derivation Path | Year | Description |
+|---|--------|----------------|------|-------------|
+| 1 | `P2PKH_addresses.py` | m → P2PKH | 2009 | Original Bitcoin Core (no HD) |
+| 2 | `Electrum_addresses.py` | m/0'/0 | ~2011 | Electrum wallet |
+| 3 | `BitcoinCoreHD_addresses.py` | m/0'/0'/0' | ~2012 | Early Bitcoin Core HD |
+| 4 | `MultiBitClassic_addresses.py` | m/0'/0/0 | ~2013 | MultiBit Classic |
+| 5 | `BIP44_addresses.py` | m/44'/0'/0'/0/0 | 2014 | BIP44 Legacy P2PKH |
+| 6 | `BIP44_external_chain_addresses.py` | m/44'/0'/0'/0 | 2014 | BIP44 chain-level |
+| 7 | `MultiBitHD_addresses.py` | m/0'/0/0' | ~2014 | MultiBit HD |
+| 8 | `BIP49_addresses.py` | m/49'/0'/0'/0/0 | 2017 | BIP49 Nested SegWit |
+| 9 | `BIP84_addresses.py` | m/84'/0'/0'/0/0 | 2017 | BIP84 Native SegWit |
+| 10 | `BIP86_addresses.py` | m/86'/0'/0'/0/0 | 2020 | BIP86 Taproot
 
 ### Blockchain API Lookups
 - `blockchain.info.py` — Query blockchain.info
