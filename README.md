@@ -25,20 +25,19 @@ python generate_mnemonic.py
 python BIP44_addresses.py
 python BIP86_addressess.py
 ```
+To generate addresses from a common BIP39 seed using historical and modern Bitcoin derivation schemes:
+
 ```
-python all_address_types.py "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
-
-1BZ9j3F7m4H1RPyeDp5iFwpR31SB6zrs19  # Original bitcoind (Bitcoin Core) (2009) used P2PKH (Pay-to-PubKey-Hash) - m
-1Q5FHbm75ZYDnHkGgBC2y8cCn8cTrqK37v  # Electrum (2011) - m/0'/0
-16fWWdLokmpctATuim8q5SvAu1GR9prV5m  # Bitcoin Core (2012) - m/0'/0'/0'
-1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA  # Legacy / Bitcoin Core (BIP44) (2014) - m/44'/0'/0'/0/0
-17871ErDqdevLTLWBH6WzjUc1EKGDQzCMA  # MultiBit Classic (2011/2014) - m/0'/0/0
-13KE6TffArLh4fVM6uoQzvsYq5vwetJcVM  # Coinomi (2014), Ledger (2014/2015), Blockchain.info (2015) (BIP44 variant) - m/44'/0'/0'/0
-1Ecw6WNntSpgRMtMfdeCt72UzsTEbqq6As  # MultiBit HD (2015) - m/0'/0/0'
-37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf  # Nested SegWit (BIP49) (2016) - m/49'/0'/0'/0/0
-bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu  # Native SegWit (BIP84) (2017) - m/84'/0'/0'/0/0
-bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr  # Taproot (BIP86) (2021) - m/86'/0'/0'/0/0
-
+1BZ9j3F7m4H1RPyeDp5iFwpR31SB6zrs19  # Illustrative: pre-HD era P2PKH (Bitcoin Core 2009 had no mnemonic/HD; shown here as m → P2PKH)
+1Q5FHbm75ZYDnHkGgBC2y8cCn8cTrqK37v  # Electrum-style derivation — m/0'/0
+16fWWdLokmpctATuim8q5SvAu1GR9prV5m  # Bitcoin Core-style HD derivation — m/0'/0'/0'
+1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA  # BIP44 Legacy P2PKH — m/44'/0'/0'/0/0
+17871ErDqdevLTLWBH6WzjUc1EKGDQzCMA  # MultiBit Classic-style derivation — m/0'/0/0 (approximate; MultiBit Classic used its own seed format, not BIP39)
+13KE6TffArLh4fVM6uoQzvsYq5vwetJcVM  # BIP44 external-chain derivation — m/44'/0'/0'/0 (chain-level; first address normally /0)
+1Ecw6WNntSpgRMtMfdeCt72UzsTEbqq6As  # MultiBit HD-style derivation — m/0'/0/0'
+37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf  # BIP49 Nested SegWit P2SH-P2WPKH — m/49'/0'/0'/0/0
+bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu  # BIP84 Native SegWit P2WPKH — m/84'/0'/0'/0/0
+bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr  # BIP86 Taproot P2TR — m/86'/0'/0'/0/0
 ```
 ## Scripts
 

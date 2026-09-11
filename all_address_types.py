@@ -43,51 +43,51 @@ def main():
     bip32_mst = Bip32Secp256k1.FromSeed(seed_bytes)
 
     original_p2pkh = compute_p2pkh_address(bip32_mst.PublicKey().RawCompressed().ToBytes())
-    print(f"{original_p2pkh}  # Original bitcoind (Bitcoin Core) (2009) used P2PKH (Pay-to-PubKey-Hash) - m")
+    print(f"{original_p2pkh}  # Illustrative: pre-HD era P2PKH (Bitcoin Core 2009 had no mnemonic/HD; shown here as m → P2PKH)")
 
     # Electrum uses m/0'/n
     electrum_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0)
     electrum_addr = compute_p2pkh_address(electrum_ext.PublicKey().RawCompressed().ToBytes())
-    print(f"{electrum_addr}  # Electrum (2011) - m/0'/0")
+    print(f"{electrum_addr}  # Electrum-style derivation — m/0'/0")
 
     # Bitcoin Core (pre-BIP32, ~2012) - using hardened derivation for all levels
     bitcoin_core_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0x80000000).ChildKey(0x80000000)
     bitcoin_core_addr = compute_p2pkh_address(bitcoin_core_ext.PublicKey().RawCompressed().ToBytes())
-    print(f"{bitcoin_core_addr}  # Bitcoin Core (2012) - m/0'/0'/0'")
+    print(f"{bitcoin_core_addr}  # Bitcoin Core-style HD derivation — m/0'/0'/0'")
 
     # BIP44 addresses
     bip44_mst = Bip44.FromSeed(seed_bytes, Bip44Coins.BITCOIN)
     bip44_addr = bip44_mst.Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
-    print(f"{bip44_addr.PublicKey().ToAddress()}  # Legacy / Bitcoin Core (BIP44) (2014) - m/44'/0'/0'/0/0")
+    print(f"{bip44_addr.PublicKey().ToAddress()}  # BIP44 Legacy P2PKH — m/44'/0'/0'/0/0")
 
     # Multibit Classic used m/0'/0/n
     multibit_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0).ChildKey(0)
     multibit_addr = compute_p2pkh_address(multibit_ext.PublicKey().RawCompressed().ToBytes())
-    print(f"{multibit_addr}  # MultiBit Classic (2011/2014) - m/0'/0/0")
+    print(f"{multibit_addr}  # MultiBit Classic-style derivation — m/0'/0/0 (approximate; MultiBit Classic used its own seed format, not BIP39)")
 
     # Coinomi, Ledger, and Blockchain.info use m/44'/0'/0' as base path
     # According to bip39 website, first address is at m/44'/0'/0'/0
     # All three share the same derivation path and produce the same address
     bip44_variant_ext = bip32_mst.ChildKey(0x8000002C).ChildKey(0x80000000).ChildKey(0x80000000).ChildKey(0)
     bip44_variant_addr = compute_p2pkh_address(bip44_variant_ext.PublicKey().RawCompressed().ToBytes())
-    print(f"{bip44_variant_addr}  # Coinomi (2014), Ledger (2014/2015), Blockchain.info (2015) (BIP44 variant) - m/44'/0'/0'/0")
+    print(f"{bip44_variant_addr}  # BIP44 external-chain derivation — m/44'/0'/0'/0 (chain-level; first address normally /0)")
 
     # MultiBit HD used m/0'/0/0' (modified BIP32/44 style path)
     multibit_hd_ext = bip32_mst.ChildKey(0x80000000).ChildKey(0).ChildKey(0x80000000)
     multibit_hd_addr = compute_p2pkh_address(multibit_hd_ext.PublicKey().RawCompressed().ToBytes())
-    print(f"{multibit_hd_addr}  # MultiBit HD (2015) - m/0'/0/0'")
+    print(f"{multibit_hd_addr}  # MultiBit HD-style derivation — m/0'/0/0'")
 
     bip49_mst = Bip49.FromSeed(seed_bytes, Bip49Coins.BITCOIN)
     bip49_addr = bip49_mst.Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
-    print(f"{bip49_addr.PublicKey().ToAddress()}  # Nested SegWit (BIP49) (2016) - m/49'/0'/0'/0/0")
+    print(f"{bip49_addr.PublicKey().ToAddress()}  # BIP49 Nested SegWit P2SH-P2WPKH — m/49'/0'/0'/0/0")
 
     bip84_mst = Bip84.FromSeed(seed_bytes, Bip84Coins.BITCOIN)
     bip84_addr = bip84_mst.Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
-    print(f"{bip84_addr.PublicKey().ToAddress()}  # Native SegWit (BIP84) (2017) - m/84'/0'/0'/0/0")
+    print(f"{bip84_addr.PublicKey().ToAddress()}  # BIP84 Native SegWit P2WPKH — m/84'/0'/0'/0/0")
 
     bip86_mst = Bip86.FromSeed(seed_bytes, Bip86Coins.BITCOIN)
     bip86_addr = bip86_mst.Purpose().Coin().Account(0).Change(Bip44Changes.CHAIN_EXT).AddressIndex(0)
-    print(f"{bip86_addr.PublicKey().ToAddress()}  # Taproot (BIP86) (2021) - m/86'/0'/0'/0/0")
+    print(f"{bip86_addr.PublicKey().ToAddress()}  # BIP86 Taproot P2TR — m/86'/0'/0'/0/0")
 
 
 if __name__ == "__main__":
