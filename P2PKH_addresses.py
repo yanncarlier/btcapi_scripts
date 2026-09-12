@@ -11,9 +11,10 @@ from bip_utils import (
     Base58Encoder,
 )
 from bip_utils.utils.mnemonic import MnemonicChecksumError
+from derivation_cli import parse_derivation_arguments
 
 # Example BIP39 mnemonic seed phrase
-mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+mnemonic, num_addresses = parse_derivation_arguments("Generate legacy P2PKH addresses from a BIP39 mnemonic.")
 passphrase = ""  # Optional passphrase (default is empty string; can be changed by user)
 
 
@@ -52,7 +53,6 @@ try:
     print("Generating pre-HD era P2PKH Addresses:")
 
     # Generate a set number of addresses
-    num_addresses = 1
     for i in range(num_addresses):
         # Direct derivation from master key (m -> address)
         # For pre-HD, we use the master key directly

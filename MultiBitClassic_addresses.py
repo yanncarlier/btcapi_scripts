@@ -4,9 +4,10 @@ BIP32 itself doesn’t specify a purpose but is often used directly for custom p
 '''
 from mnemonic import Mnemonic
 from bip32utils import BIP32Key, BIP32_HARDEN
+from derivation_cli import parse_derivation_arguments
 
 # Example BIP39 mnemonic seed phrase
-mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+mnemonic, num_addresses = parse_derivation_arguments("Generate MultiBit Classic-style P2PKH addresses from a BIP39 mnemonic.")
 passphrase = ""  # Optional passphrase (default is empty string; can be changed by user)
 
 try:
@@ -37,7 +38,6 @@ try:
 
 
     # Generate a set number of addresses
-    num_addresses = 1
     for i in range(num_addresses):
         # Derive Bitcoin address using BIP44 path: m/44'/0'/0'/0/i
         # Note: Original script used m/32', but BIP44 for Bitcoin uses 44'. Adjusted accordingly.

@@ -4,9 +4,10 @@ BIP44 (Legacy P2PKH, among others) uses 44'.
 '''
 from bip_utils import Bip39SeedGenerator, Bip44, Bip44Coins, Bip44Changes, Bip39MnemonicValidator
 from bip_utils.utils.mnemonic import MnemonicChecksumError
+from derivation_cli import parse_derivation_arguments
 
 # Example BIP39 mnemonic seed phrase
-mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+mnemonic, num_addresses = parse_derivation_arguments("Generate BIP44 P2PKH addresses from a BIP39 mnemonic.")
 passphrase = ""  # Optional passphrase (default is empty string; can be changed by user)
 
 try:
@@ -38,7 +39,6 @@ try:
     print("Account Extended Public Key (xpub):", account_xpub)
 
     # Generate a set number of addresses
-    num_addresses = 1  # Number of addresses to generate
     for i in range(num_addresses):
         # Derive the external chain and address at index i
         bip44_chg_ctx = bip44_acc_ctx.Change(Bip44Changes.CHAIN_EXT)

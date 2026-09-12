@@ -10,9 +10,10 @@ from bip_utils import (
     Bip44Changes
 )
 from bip_utils.utils.mnemonic import MnemonicChecksumError
+from derivation_cli import parse_derivation_arguments
 
 # Example BIP39 mnemonic seed phrase
-mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+mnemonic, num_addresses = parse_derivation_arguments("Generate BIP84 native SegWit P2WPKH addresses from a BIP39 mnemonic.")
 passphrase = ""  # Optional passphrase (default is empty string; can be changed by user)
 
 try:
@@ -38,7 +39,6 @@ try:
     print("Account Extended Public Key:", account_xpub)
     
     # Generate a set number of BIP84 addresses
-    num_addresses = 1
     print("Generating BIP84 (Native SegWit P2WPKH) Addresses:")
 
     for i in range(num_addresses):

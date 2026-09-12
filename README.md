@@ -22,41 +22,11 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-Or with the Python standard library and `pip`:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-```
-
-Dependencies are declared in `requirements.in` and pinned in
-`requirements.txt`. Run the examples from the repository root. After setup,
-use `.venv/bin/python` or `python` while the virtual environment is active.
-
 ## Command-line arguments
-
-Five scripts currently accept command-line arguments:
-
-| Script | Usage | Argument |
-| --- | --- | --- |
-| `all_address_types.py` | `python all_address_types.py [MNEMONIC]` | Optional, complete BIP39 mnemonic. |
-| `net/blockchain.info.py` | `python net/blockchain.info.py ADDRESS` | Required Bitcoin address to query. |
-| `net/blockcypher.com.py` | `python net/blockcypher.com.py ADDRESS` | Required Bitcoin address to query. |
-| `net/blockstream.info.py` | `python net/blockstream.info.py ADDRESS` | Required Bitcoin address to query. |
-| `net/mempool.space.py` | `python net/mempool.space.py ADDRESS` | Required Bitcoin address to query. |
-| `create_transaction.py` | `python create_transaction.py --private-key KEY --source ADDRESS --txid TXID --vout N --input-sats SATS --destination ADDRESS --amount-sats SATS --fee-sats SATS` | Required transaction details. |
-
-`all_address_types.py` accepts an optional positional argument: a complete,
-quoted BIP39 mnemonic:
 
 ```text
 python all_address_types.py [MNEMONIC]
 ```
-
-| Argument | Required | Meaning |
-| --- | --- | --- |
-| `MNEMONIC` | No | A valid 12- or 24-word BIP39 mnemonic. It must be passed as one quoted shell argument. When omitted, the script uses its public test mnemonic. |
 
 Examples:
 

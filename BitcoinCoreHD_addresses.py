@@ -11,9 +11,10 @@ from bip_utils import (
     Base58Encoder,
 )
 from bip_utils.utils.mnemonic import MnemonicChecksumError
+from derivation_cli import parse_derivation_arguments
 
 # Example BIP39 mnemonic seed phrase
-mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+mnemonic, num_addresses = parse_derivation_arguments("Generate Bitcoin Core-style HD P2PKH addresses from a BIP39 mnemonic.")
 passphrase = ""  # Optional passphrase (default is empty string; can be changed by user)
 
 
@@ -48,7 +49,6 @@ try:
     print("Generating Bitcoin Core-style HD P2PKH Addresses (m/0'/0'/0'):")
 
     # Generate a set number of addresses
-    num_addresses = 1
     for i in range(num_addresses):
         # Derive using Bitcoin Core HD path: m/0'/0'/0'
         address_key = bip32_mst.ChildKey(0x80000000).ChildKey(0x80000000).ChildKey(0x80000000)
