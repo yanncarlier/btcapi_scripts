@@ -2,16 +2,20 @@
 """Create and sign a one-input Bitcoin transaction without broadcasting it.
 
 This educational tool supports spending a P2PKH (``1...``/``m...``) or native
-SegWit P2WPKH (``bc1q...``/``tb1q...``) UTXO.  It deliberately does not fetch
-UTXOs or broadcast: inspect the resulting unsigned/signed transaction in a
-wallet or explorer before using it with real funds.
+SegWit P2WPKH (``bc1q...``/``tb1q...``) UTXO.  It can automatically fetch
+UTXOs from mempool.space, or you can provide them manually. Inspect the
+resulting unsigned/signed transaction in a wallet or explorer before using
+it with real funds.
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import sys
+import urllib.error
+import urllib.request
 from dataclasses import dataclass
 
 from cryptography.hazmat.primitives import hashes
@@ -26,6 +30,23 @@ DUST_LIMIT_SATOSHIS = 546
 
 class TransactionError(ValueError):
     """Raised when transaction arguments are invalid or unsupported."""
+
+
+def fetch_utxos(address: str, network: str) -> list[dict]:
+    """Fetch UTXOs for an address from mempool.space API."""
+    base_url = "https://mempool.space" if network == "mainnet" else "https://mempool.space/testnet"
+    url = f"{base_url}/api/address/{address}/utxo"
+
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            data = json.loads(response.read().decode('utf-8'))
+            return data
+    except urllib.error.HTTPError as e:
+        raise TransactionError(f"mempool.space API error: HTTP {e.code} - {e.reason}") from e
+    except urllib.error.URLError as e:
+        raise TransactionError(f"Failed to connect to mempool.space: {e.reason}") from e
+    except json.JSONDecodeError as e:
+        raise TransactionError(f"Invalid response from mempool.space: {e}") from e
 
 
 @dataclass(frozen=True)
@@ -213,15 +234,39 @@ def sign_transaction_digest(private_key: ec.EllipticCurvePrivateKey, digest: byt
 
 def build_transaction(arguments: argparse.Namespace) -> str:
     """Validate arguments, build, sign, and return a serialized transaction."""
+    txid_str = arguments.txid
+    vout = arguments.vout
+    input_sats = arguments.input_sats
+
+    # Auto-fetch UTXO from mempool.space if txid/vout/input_sats not provided
+    if txid_str is None or vout is None or input_sats is None:
+        if txid_str is not None or vout is not None or input_sats is not None:
+            raise TransactionError("Either provide all of --txid, --vout, and --input-sats, or none of them (for auto-fetch from mempool.space)")
+
+        utxos = fetch_utxos(arguments.source, arguments.network)
+        if not utxos:
+            raise TransactionError(f"No UTXOs found for address {arguments.source} on {arguments.network}")
+
+        # Sort by value descending (use largest UTXO by default)
+        sorted_utxos = sorted(utxos, key=lambda u: u['value'], reverse=True)
+        if arguments.utxo_index >= len(sorted_utxos):
+            raise TransactionError(f"UTXO index {arguments.utxo_index} out of range (found {len(sorted_utxos)} UTXOs)")
+
+        selected_utxo = sorted_utxos[arguments.utxo_index]
+        txid_str = selected_utxo['txid']
+        vout = selected_utxo['vout']
+        input_sats = selected_utxo['value']
+        print(f"Auto-selected UTXO: txid={txid_str}, vout={vout}, value={input_sats} sats", file=sys.stderr)
+
     try:
-        txid = bytes.fromhex(arguments.txid)
+        txid = bytes.fromhex(txid_str)
     except ValueError as error:
         raise TransactionError("--txid must be hexadecimal") from error
     if len(txid) != 32:
         raise TransactionError("--txid must be exactly 32 bytes (64 hex characters)")
-    if arguments.vout < 0 or arguments.input_sats <= 0 or arguments.amount_sats <= 0 or arguments.fee_sats < 0:
+    if vout < 0 or input_sats <= 0 or arguments.amount_sats <= 0 or arguments.fee_sats < 0:
         raise TransactionError("vout, amounts, and fee must be non-negative; amounts must be positive")
-    if arguments.input_sats < arguments.amount_sats + arguments.fee_sats:
+    if input_sats < arguments.amount_sats + arguments.fee_sats:
         raise TransactionError("input value is smaller than amount plus fee")
 
     private_key, compressed_wif = private_key_from_text(arguments.private_key, arguments.network)
@@ -232,7 +277,7 @@ def build_transaction(arguments: argparse.Namespace) -> str:
     if source.payload != hash160(public_key):
         raise TransactionError("--source does not correspond to the supplied private key")
     destination = decode_address(arguments.destination, arguments.network)
-    change = arguments.input_sats - arguments.amount_sats - arguments.fee_sats
+    change = input_sats - arguments.amount_sats - arguments.fee_sats
     outputs = [serialize_output(arguments.amount_sats, destination.script_pubkey())]
     if change:
         if change < DUST_LIMIT_SATOSHIS:
@@ -245,20 +290,20 @@ def build_transaction(arguments: argparse.Namespace) -> str:
     locktime = (0).to_bytes(4, "little")
     previous_script = source.script_pubkey()
     if source.kind == "p2pkh":
-        signing_input = serialize_input(txid, arguments.vout, previous_script, sequence)
+        signing_input = serialize_input(txid, vout, previous_script, sequence)
         preimage = version + b"\x01" + signing_input + compact_size(len(outputs)) + b"".join(outputs) + locktime + SIGHASH_ALL.to_bytes(4, "little")
         signature = sign_transaction_digest(private_key, double_sha256(preimage)) + bytes([SIGHASH_ALL])
         script_sig = push_data(signature) + push_data(public_key)
-        transaction = version + b"\x01" + serialize_input(txid, arguments.vout, script_sig, sequence) + compact_size(len(outputs)) + b"".join(outputs) + locktime
+        transaction = version + b"\x01" + serialize_input(txid, vout, script_sig, sequence) + compact_size(len(outputs)) + b"".join(outputs) + locktime
     else:
-        hash_prevouts = double_sha256(txid[::-1] + arguments.vout.to_bytes(4, "little"))
+        hash_prevouts = double_sha256(txid[::-1] + vout.to_bytes(4, "little"))
         hash_sequence = double_sha256(sequence.to_bytes(4, "little"))
         hash_outputs = double_sha256(b"".join(outputs))
         script_code = b"\x19\x76\xa9\x14" + source.payload + b"\x88\xac"
-        preimage = version + hash_prevouts + hash_sequence + txid[::-1] + arguments.vout.to_bytes(4, "little") + script_code + arguments.input_sats.to_bytes(8, "little") + sequence.to_bytes(4, "little") + hash_outputs + locktime + SIGHASH_ALL.to_bytes(4, "little")
+        preimage = version + hash_prevouts + hash_sequence + txid[::-1] + vout.to_bytes(4, "little") + script_code + input_sats.to_bytes(8, "little") + sequence.to_bytes(4, "little") + hash_outputs + locktime + SIGHASH_ALL.to_bytes(4, "little")
         signature = sign_transaction_digest(private_key, double_sha256(preimage)) + bytes([SIGHASH_ALL])
         marker_and_flag = b"\x00\x01"
-        unsigned_input = serialize_input(txid, arguments.vout, b"", sequence)
+        unsigned_input = serialize_input(txid, vout, b"", sequence)
         witness = b"\x02" + push_data(signature) + push_data(public_key)
         transaction = version + marker_and_flag + b"\x01" + unsigned_input + compact_size(len(outputs)) + b"".join(outputs) + witness + locktime
     return transaction.hex()
@@ -269,9 +314,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--private-key", required=True, help="32-byte hex private key or network-appropriate WIF")
     parser.add_argument("--source", required=True, help="Funded P2PKH or P2WPKH address belonging to --private-key")
-    parser.add_argument("--txid", required=True, help="Transaction ID containing the UTXO (display-order hex)")
-    parser.add_argument("--vout", required=True, type=int, help="Output index of the UTXO")
-    parser.add_argument("--input-sats", required=True, type=int, help="UTXO value in satoshis")
+    parser.add_argument("--txid", help="Transaction ID containing the UTXO (display-order hex). Auto-fetched from mempool.space if not provided")
+    parser.add_argument("--vout", type=int, help="Output index of the UTXO. Auto-fetched from mempool.space if not provided")
+    parser.add_argument("--input-sats", type=int, help="UTXO value in satoshis. Auto-fetched from mempool.space if not provided")
+    parser.add_argument("--utxo-index", type=int, default=0, help="Index of UTXO to use when auto-fetching (default: 0, largest value UTXO)")
     parser.add_argument("--destination", required=True, help="Recipient P2PKH or P2WPKH address")
     parser.add_argument("--amount-sats", required=True, type=int, help="Amount to recipient in satoshis")
     parser.add_argument("--fee-sats", required=True, type=int, help="Miner fee in satoshis")
